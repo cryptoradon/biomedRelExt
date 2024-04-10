@@ -120,7 +120,7 @@ def createPairs(docs):
     return pairs
 
 # Load the document data from a file
-with open('C:\\Users\\indus\\OneDrive\\Desktop\\Upwork\\Biomedical Relation Extraction\\CDR_Data\\CDR.Corpus.v010516\\CDR_TrainingSet.PubTator.txt', 'r') as fp:
+with open('./CDR_Data/CDR.Corpus.v010516/CDR_TrainingSet.PubTator.txt', 'r') as fp:
     docs = pubtator.load(fp)
 
 # Create pairs from the loaded documents
