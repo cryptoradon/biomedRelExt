@@ -1,10 +1,10 @@
 from bioc import pubtator
 import spacy
+import pickle
 
 # A class to represent sentences within the document
 class Sentence:
-    def __init__(self, id, text, start, end, annotations=None):
-        self.id = id                                            # Sentence ID
+    def __init__(self, text, start, end, annotations=None):
         self.text = text                                        # Text content of the sentence
         self.start = start                                      # Starting index of the sentence within the document
         self.end = end                                          # Ending index of the sentence within the document
@@ -16,15 +16,15 @@ class Sentence:
 # A class for chemical-disease pairs with context and metadata
 class Pair:
     def __init__(self, chemical, disease, context, pmid, pair_type):
-        self.chemical = chemical                                # Chemical name
-        self.disease = disease                                  # Disease name
+        self.chemical = chemical                                # Chemical
+        self.disease = disease                                  # Disease
         self.context = context                                  # Context in which the pair occurs, with masking applied
         self.pmid = pmid                                        # PubMed ID of the article
         self.pair_type = pair_type                              # Specifies whether the pair is intra-sentential or inter-sentential
 
     # Representation of a Pair object when printed
     def __repr__(self):
-        return f"Pair(chemical={self.chemical}, disease={self.disease}, context=[{self.context[:30]}...], pmid={self.pmid}, pair_type={self.pair_type})"
+        return f"Pair(chemical={self.chemical.text}, disease={self.disease.text}, context=[{self.context[:30]}...], pmid={self.pmid}, pair_type={self.pair_type})"
 
 # Function to mask all diseases in the context except for the target disease
 def maskOtherDiseasesInContext(context, targetDiseaseAnnotation, allAnnotations):
@@ -47,11 +47,12 @@ def maskOtherDiseasesInContext(context, targetDiseaseAnnotation, allAnnotations)
     return maskedContext + "\n" + annotationString
 
 # Function to create chemical-disease pairs from a list of documents
-def createPairs(docs):
+def instanceConstruction(docs):
     pairs = []                              # List to store all the pairs
     nlp = spacy.load("en_core_sci_scibert") # Load a SpaCy model specialized in biomedical text
 
     for doc in docs:
+        pairsInDoc = []                     # Pairs in specific doc
         annotations = doc.annotations       # Extract annotations from the document
         text = doc.text                     # Document text
         pmid = doc.pmid                     # PubMed ID of the document
@@ -61,10 +62,12 @@ def createPairs(docs):
 
         start = 0
         # Fill the sentences list
-        for id, senText in enumerate(sentenceTexts.sents):
+        for senText in sentenceTexts.sents:
+            if len(senText.text) <= 1:
+                continue
             start = text.find(senText.text, start)
             end = start + len(senText.text)
-            sentences.append(Sentence(id, senText.text, start, end))
+            sentences.append(Sentence(senText.text, start, end))
             start = end
 
         # Process annotations for each sentence
@@ -79,7 +82,7 @@ def createPairs(docs):
             diseases = [ann for ann in sen.annotations if ann.type == 'Disease']
             for chem in chemicals:
                 for dis in diseases:
-                    pairs.append(Pair(chem.text, dis.text, maskOtherDiseasesInContext(text, dis, annotations), pmid, "intra"))
+                    pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "intra"))
 
         # Initialize the start and end indices for a window of sentences
         start = 0
@@ -99,7 +102,7 @@ def createPairs(docs):
                 for chem in currentChemicals:
                     for dis in nextDiseases:
                         context = " ".join(s.text for s in sentences[start:start+j+1])
-                        pairs.append(Pair(chem.text, dis.text, maskOtherDiseasesInContext(context, dis, annotations), pmid, "inter"))
+                        pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(context, dis, annotations), pmid, "inter"))
 
                 # Repeat the process for diseases in the current sentence and chemicals in the next.
                 currentDiseases = [ann for ann in annsIn3Sentences[0] if ann.type == 'Disease']
@@ -108,7 +111,7 @@ def createPairs(docs):
                 for dis in currentDiseases:
                     for chem in nextChemicals:
                         context = " ".join(s.text for s in sentences[start:start+j+1])
-                        pairs.append(Pair(dis.text, chem.text, maskOtherDiseasesInContext(context, chem, annotations), pmid, "inter"))
+                        pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(context, chem, annotations), pmid, "inter"))
 
             # Slide the window one sentence forward.
             start += 1
@@ -116,22 +119,22 @@ def createPairs(docs):
             if end < len(sentences) - 1:
                 end += 1
                 annsIn3Sentences.append(sentences[end].annotations)
+        
+        pairs.append(pairsInDoc)
 
     return pairs
 
-# Load the document data from a file
-with open('./CDR_Data/CDR.Corpus.v010516/CDR_TrainingSet.PubTator.txt', 'r') as fp:
-    docs = pubtator.load(fp)
+if __name__ == '__main__':
+    # Load the document data from a file
+    with open('./CDR_Data/CDR.Corpus.v010516/CDR_TrainingSet.PubTator.txt', 'r') as fp:
+        docs = pubtator.load(fp)
 
-# Create pairs from the loaded documents
-pairs = createPairs(docs)
+    # Create pairs from the loaded documents
+    pairs = instanceConstruction(docs)
 
-# Open a file to write the output
-w = open("testIC.txt", "w")
+    # Open a file to write the output
+    with open('pairs1.pkl', 'wb') as outputFile:
+        pickle.dump(pairs, outputFile)
 
-# Write the details of each pair to the output file
-for pair in pairs:
-    w.write(f"{pair.chemical}\n{pair.disease}\n{pair.pair_type}\n{pair.context}\n")
-
-# Close the file after writing
-w.close()
+    # Close the file after writing
+    outputFile.close()
