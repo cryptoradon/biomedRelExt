@@ -12,46 +12,54 @@ def hypernymFiltering(pairs, descriptorMap):
         newPairsInDoc = []                  # List to store new pairs in specific doc
         
         for i, currentPair in enumerate(pairsInDoc):
-            # Remove the pair if the chemical or disease is previously eliminated
-            if currentPair.chemical.id in eliminatedIDs or currentPair.disease.id in eliminatedIDs:
-                continue
-            
-            eliminated = False
-            # Compare with the chemical and diseases found later in the document and remove currentPair if more general 
-            # (Replaced the name TreeNumber with Index)
-            for tempPair in pairsInDoc[i + 1:]:
-                # Check for chemical
-                if currentPair.chemical.id != '-1' and tempPair.chemical.id != '-1':
-                    for currentIndex in descriptorMap[currentPair.chemical.id]:
-                        for tempIndex in descriptorMap[tempPair.chemical.id]:
-                            if currentIndex in tempIndex and currentIndex != tempIndex:
-                                eliminatedIDs.append(currentPair.chemical.id)
-                                eliminated = True
-                                # No need to check other temp indices
-                                break
-                        # No need to check other current indices
-                        if eliminated:
-                            break
-                    # No need to check other temp pairs
-                    if eliminated:
-                        break
-                
-                # Same check for disease
-                if currentPair.disease.id != '-1' and tempPair.disease.id != '-1':
-                    for currentIndex in descriptorMap[currentPair.disease.id]:
-                        for tempIndex in descriptorMap[tempPair.disease.id]:
-                            if currentIndex in tempIndex and currentIndex != tempIndex:
-                                eliminatedIDs.append(currentPair.disease.id)
-                                eliminated = True
-                                break
-                        if eliminated:
-                            break
-                    if eliminated:
-                        break
+            currentChemicalIDs = currentPair.chemical.id.split('|')
+            currentDiseaseIDs = currentPair.disease.id.split('|')
+            for currentChemicalID in currentChemicalIDs:
+                for currentDiseaseID in currentDiseaseIDs:
+                    # Remove the pair if the chemical or disease is previously eliminated
+                    if currentChemicalID in eliminatedIDs or currentDiseaseID in eliminatedIDs:
+                        continue
+                    
+                    eliminated = False
+                    # Compare with the chemical and diseases found later in the document and remove currentPair if more general 
+                    # (Replaced the name TreeNumber with Index)
+                    for tempPair in pairsInDoc[i + 1:]:
+                        tempChemicalIDs = tempPair.chemical.id.split('|')
+                        tempDiseaseIDs = tempPair.disease.id.split('|')
+                        for tempChemicalID in tempChemicalIDs:
+                            for tempDiseaseID in tempDiseaseIDs:
+                                # Check for chemical
+                                if currentChemicalID in descriptorMap and tempChemicalID in descriptorMap:
+                                    for currentIndex in descriptorMap[currentChemicalID]:
+                                        for tempIndex in descriptorMap[tempChemicalID]:
+                                            if currentIndex in tempIndex and currentIndex != tempIndex:
+                                                eliminatedIDs.add(currentChemicalID)
+                                                eliminated = True
+                                                # No need to check other temp indices
+                                                break
+                                        # No need to check other current indices
+                                        if eliminated:
+                                            break
+                                    # No need to check other temp pairs
+                                    if eliminated:
+                                        break
+                                
+                                # Same check for disease
+                                if currentDiseaseID in descriptorMap and tempDiseaseID in descriptorMap:
+                                    for currentIndex in descriptorMap[currentDiseaseID]:
+                                        for tempIndex in descriptorMap[tempDiseaseID]:
+                                            if currentIndex in tempIndex and currentIndex != tempIndex:
+                                                eliminatedIDs.add(currentDiseaseID)
+                                                eliminated = True
+                                                break
+                                        if eliminated:
+                                            break
+                                    if eliminated:
+                                        break
 
-            # Store new pair if it is not eliminated
-            if not eliminated:
-                newPairsInDoc.append(currentPair)
+                        # Store new pair if it is not eliminated
+                        if not eliminated:
+                            newPairsInDoc.append(currentPair)
         
         # Add to the new list of pairs
         newPairs.append(newPairsInDoc)
