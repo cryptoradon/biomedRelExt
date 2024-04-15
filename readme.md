@@ -44,3 +44,11 @@ python preprocessCDR3.py
 ```
 
 The output will be ``` input.pkl ```
+
+# Deactivation
+
+Deactivate the environmnent with this command
+
+```bash
+deactivate
+```
