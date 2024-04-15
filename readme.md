@@ -1,4 +1,4 @@
-# Project Title
+# Biomedical Relation Extraction
 
 Preprocessing phase of the Biomedical Relation Extraction project.
 
@@ -25,7 +25,7 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-# Install Dependencies
+## Install Dependencies
 
 Install all dependencies using the requirements.txt file:
 
@@ -33,7 +33,7 @@ Install all dependencies using the requirements.txt file:
 pip install -r requirements.txt
 ```
 
-# Running the project
+## Running the project
 
 There are three scripts that are to be run in order:
 
@@ -45,7 +45,7 @@ python preprocessCDR3.py
 
 The output will be ``` input.pkl ```
 
-# Deactivation
+## Deactivation
 
 Deactivate the environmnent with this command
 
