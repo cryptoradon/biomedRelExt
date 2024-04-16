@@ -24,14 +24,14 @@ def queryConstruction(pairs):
 
 if __name__ == '__main__':
     # Load the pairs that were produced by the second stage
-    with open('pairs2.pkl', 'rb') as input_file:
+    with open('./Preprocessed/CDRTraining/pairs2.pkl', 'rb') as input_file:
         pairs = pickle.load(input_file)
     
     # Create the inputs to the model from the pairs
     inputs = queryConstruction(pairs)
 
     # Open a file to write the output
-    with open('input.pkl', 'wb') as outputFile:
+    with open('./Preprocessed/CDRTraining/input.pkl', 'wb') as outputFile:
         pickle.dump(inputs, outputFile)
 
     # Close the file after writing

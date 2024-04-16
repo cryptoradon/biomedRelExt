@@ -133,7 +133,7 @@ if __name__ == '__main__':
     pairs = instanceConstruction(docs)
 
     # Open a file to write the output
-    with open('pairs1.pkl', 'wb') as outputFile:
+    with open('./Preprocessed/CDRTraining/pairs1.pkl', 'wb') as outputFile:
         pickle.dump(pairs, outputFile)
 
     # Close the file after writing

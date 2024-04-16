@@ -41,9 +41,10 @@ There are three scripts that are to be run in order:
 python preprocessCDR1.py
 python preprocessCDR2.py
 python preprocessCDR3.py
+python preprocessCDR4.py
 ```
 
-The output will be ``` input.pkl ```
+The output will be ``` tokenizedInput.pkl ```
 
 ## Deactivation
 
