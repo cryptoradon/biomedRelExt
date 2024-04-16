@@ -30,6 +30,9 @@ def tokenizeInputs(inputs):
             # Append the token IDs and attention masks to their respective lists
             inputIDsInDoc.append(tokens['input_ids'][0])
             attentionMasksInDoc.append(tokens['attention_mask'][0])
+        
+        inputIDs.append(inputIDsInDoc)
+        attentionMasks.append(attentionMasksInDoc)
 
 if __name__ == '__main__':
     # Load the inputs that were produced by the third stage

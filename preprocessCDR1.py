@@ -101,8 +101,7 @@ def instanceConstruction(docs):
                 # For each chemical-disease pair found, create a Pair object and add to the pairs list.
                 for chem in currentChemicals:
                     for dis in nextDiseases:
-                        context = " ".join(s.text for s in sentences[start:start+j+1])
-                        pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(context, dis, annotations), pmid, "inter"))
+                        pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "inter"))
 
                 # Repeat the process for diseases in the current sentence and chemicals in the next.
                 currentDiseases = [ann for ann in annsIn3Sentences[0] if ann.type == 'Disease']
@@ -110,8 +109,7 @@ def instanceConstruction(docs):
                 
                 for dis in currentDiseases:
                     for chem in nextChemicals:
-                        context = " ".join(s.text for s in sentences[start:start+j+1])
-                        pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(context, chem, annotations), pmid, "inter"))
+                        pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "inter"))
 
             # Slide the window one sentence forward.
             start += 1
