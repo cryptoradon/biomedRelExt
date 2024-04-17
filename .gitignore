@@ -5,3 +5,5 @@ testspacy.txt
 testspacylg.txt
 testspacyscibert.txt
 biomedRelExtEnv/
+Preprocessed/CDRTraining/tokenizedInputs.pkl
+CTD_Data/CTD_chemicals_diseases.xml

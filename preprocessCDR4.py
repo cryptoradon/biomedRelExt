@@ -1,50 +1,53 @@
 import pickle
 from transformers import BertTokenizer
 from preprocessCDR3 import Input
+from torch.utils.data import DataLoader, Dataset
+import torch
 
-# Function to tokenize the inputs for the bioBERT model
-def tokenizeInputs(inputs):
-    inputIDs = []                   # List to store the token IDs 
-    attentionMasks = []             # List to store the attention masks
+class CustomDataset(Dataset):
+    """ Custom dataset for efficiently handling input from a single document """
+    def __init__(self, inputs, tokenizer):
+        self.inputs = inputs
+        self.tokenizer = tokenizer
 
-    # Initialize the BioBERT tokenizer for tokenizing the inputs
-    tokenizer = BertTokenizer.from_pretrained('dmis-lab/biobert-base-cased-v1.2')
+    def __len__(self):
+        return len(self.inputs)
 
-    for inputsInDoc in inputs:
-        inputIDsInDoc = []          # List to stoe the token IDs in specific doc
-        attentionMasksInDoc = []    # List to store the attention masks in specific doc
+    def __getitem__(self, idx):
+        input = self.inputs[idx]
+        input_sequence = f"[CLS] {input.query} [SEP] {input.context} [SEP]"
+        tokens = self.tokenizer.encode_plus(
+            input_sequence,
+            max_length=512,
+            truncation=True,
+            padding='max_length',
+            return_tensors='pt'
+        )
+        return tokens['input_ids'].squeeze(0), tokens['attention_mask'].squeeze(0)
 
-        for input in inputsInDoc:
-            # Construct the input sequence by appending [CLS] and [SEP] tokens
-            inputSequence = f"[CLS] {input.query} [SEP] {input.context} [SEP]"
-            
-            # Tokenize the constructed sequence and generate the corresponding attention masks
-            tokens = tokenizer.encode_plus(
-                inputSequence, 
-                max_length=512, 
-                truncation=True, 
-                padding='max_length', 
-                return_tensors='pt'
-            )
+def tokenize_inputs_and_save(docs_inputs, tokenizer, batch_size=16, output_file_path='./Preprocessed/CDRTraining/tokenizedInputs.pkl'):
+    """ Tokenize inputs by document and save them immediately to preserve document structure """
+    i = 0
+    for inputs in docs_inputs:
+        dataset = CustomDataset(inputs, tokenizer)
+        data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
-            # Append the token IDs and attention masks to their respective lists
-            inputIDsInDoc.append(tokens['input_ids'][0])
-            attentionMasksInDoc.append(tokens['attention_mask'][0])
-        
-        inputIDs.append(inputIDsInDoc)
-        attentionMasks.append(attentionMasksInDoc)
+        with open(output_file_path, 'ab') as outputFile:
+            for input_ids, attention_masks in data_loader:
+                pickle.dump((input_ids, attention_masks), outputFile)
+        print("Input #" + str(i) + " done.")
+        i += 1
 
 if __name__ == '__main__':
     # Load the inputs that were produced by the third stage
     with open('./Preprocessed/CDRTraining/input.pkl', 'rb') as inputFile:
-        inputs = pickle.load(inputFile)
+        docs_inputs = pickle.load(inputFile)
     
-    # Tokenize the inputs
-    inputIDs, attentionMasks = tokenizeInputs(inputs)
-
-    # Open a file to write the output
+    # Initialize tokenizer
+    tokenizer = BertTokenizer.from_pretrained('dmis-lab/biobert-base-cased-v1.2')
+    
     with open('./Preprocessed/CDRTraining/tokenizedInputs.pkl', 'wb') as outputFile:
-        pickle.dump((inputIDs, attentionMasks), outputFile)
+        pass
 
-    # Close the file after writing
-    outputFile.close()
+    # Tokenize inputs and save, maintaining the 2D list structure
+    tokenize_inputs_and_save(docs_inputs, tokenizer)
