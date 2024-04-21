@@ -61,9 +61,9 @@ def hypernymFiltering(pairs, descriptorMap):
                                     if eliminated:
                                         break
 
-                        # Store new pair if it is not eliminated
-                        if not eliminated:
-                            newPairsInDoc.append(currentPair)
+                    # Store new pair if it is not eliminated
+                    if not eliminated:
+                        newPairsInDoc.append(currentPair)
         
         # Add to the new list of pairs
         newPairs.append(newPairsInDoc)

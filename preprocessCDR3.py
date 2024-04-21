@@ -7,6 +7,8 @@ class Input:
     def __init__(self, pair):
         self.context = pair.context             # Context in which the pair occurs
         self.query = self.createQuery(pair)     # Query that asks which disease is induced
+        self.chemicalID = pair.chemical.id
+        self.diseaseID = pair.disease.id
 
     def createQuery(self, pair):
         return f"what disease does {pair.chemical.text} induce"

@@ -23,18 +23,22 @@ class CustomDataset(Dataset):
             padding='max_length',
             return_tensors='pt'
         )
-        return tokens['input_ids'].squeeze(0), tokens['attention_mask'].squeeze(0), tokens['token_type_ids'].squeeze(0)
+        return (
+            tokens['input_ids'].squeeze(0),
+            tokens['attention_mask'].squeeze(0),
+            input.chemicalID,
+            input.diseaseID
+        )
 
 def tokenize_inputs_and_save(docs_inputs, tokenizer, batch_size=16, output_file_path='./Preprocessed/CDRTraining/tokenizedInputs.pkl'):
-    """ Tokenize inputs by document and save them immediately to preserve document structure """
     i = 0
     for inputs in docs_inputs:
         dataset = CustomDataset(inputs, tokenizer)
         data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
         with open(output_file_path, 'ab') as outputFile:
-            for input_ids, attention_masks, token_type_ids in data_loader:
-                pickle.dump((input_ids, attention_masks, token_type_ids), outputFile)
+            for input_ids, attention_masks, chemicalIDs, diseaseIDs in data_loader:
+                pickle.dump((input_ids, attention_masks, chemicalIDs, diseaseIDs), outputFile)
         print("Input #" + str(i) + " done.")
         i += 1
 
@@ -46,6 +50,7 @@ if __name__ == '__main__':
     # Initialize tokenizer
     tokenizer = BertTokenizer.from_pretrained('dmis-lab/biobert-base-cased-v1.2')
     
+    # Clear the output file first to avoid appending to an old file
     with open('./Preprocessed/CDRTraining/tokenizedInputs.pkl', 'wb') as outputFile:
         pass
 
