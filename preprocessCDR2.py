@@ -97,6 +97,3 @@ if __name__ == '__main__':
     # Open a file to write the output
     with open('./Preprocessed/CDRTraining/pairs2.pkl', 'wb') as outputFile:
         pickle.dump(pairs, outputFile)
-
-    # Close the file after writing
-    outputFile.close()

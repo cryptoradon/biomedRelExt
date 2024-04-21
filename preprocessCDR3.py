@@ -34,6 +34,3 @@ if __name__ == '__main__':
     with open('./Preprocessed/CDRTraining/input.pkl', 'wb') as outputFile:
         pickle.dump(inputs, outputFile)
 
-    # Close the file after writing
-    outputFile.close()
-
