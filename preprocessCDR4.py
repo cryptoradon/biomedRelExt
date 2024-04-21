@@ -23,7 +23,7 @@ class CustomDataset(Dataset):
             padding='max_length',
             return_tensors='pt'
         )
-        return tokens['input_ids'].squeeze(0), tokens['attention_mask'].squeeze(0)
+        return tokens['input_ids'].squeeze(0), tokens['attention_mask'].squeeze(0), tokens['token_type_ids'].squeeze(0)
 
 def tokenize_inputs_and_save(docs_inputs, tokenizer, batch_size=16, output_file_path='./Preprocessed/CDRTraining/tokenizedInputs.pkl'):
     """ Tokenize inputs by document and save them immediately to preserve document structure """
@@ -33,8 +33,8 @@ def tokenize_inputs_and_save(docs_inputs, tokenizer, batch_size=16, output_file_
         data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
         with open(output_file_path, 'ab') as outputFile:
-            for input_ids, attention_masks in data_loader:
-                pickle.dump((input_ids, attention_masks), outputFile)
+            for input_ids, attention_masks, token_type_ids in data_loader:
+                pickle.dump((input_ids, attention_masks, token_type_ids), outputFile)
         print("Input #" + str(i) + " done.")
         i += 1
 
