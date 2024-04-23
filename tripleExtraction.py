@@ -93,3 +93,10 @@ if __name__ == '__main__':
     # Save CTD training and testing triples
     np.savetxt('./Knowledge_Representation/triplesCTD25_train.txt', sampledCTDTrain, fmt='%s %s %s')
     np.savetxt('./Knowledge_Representation/triplesCTD25_test.txt', sampledCTDTest, fmt='%s %s %s')
+
+    sampledTriplesCTD, _ = train_test_split(finalTriplesCTD, test_size=0.50, random_state=42)
+    sampledCTDTrain, sampledCTDTest = train_test_split(sampledTriplesCTD, test_size=0.20, random_state=42)  # 20% of the sampled data for testing
+
+    # Save CTD training and testing triples
+    np.savetxt('./Knowledge_Representation/triplesCTD50_train.txt', sampledCTDTrain, fmt='%s %s %s')
+    np.savetxt('./Knowledge_Representation/triplesCTD50_test.txt', sampledCTDTest, fmt='%s %s %s')
