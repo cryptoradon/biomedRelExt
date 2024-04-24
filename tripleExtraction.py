@@ -50,6 +50,23 @@ def getTripletsFromCDR(docs, tripletsCTD):
             print("Extracted CDR " + str(key))
     return triplets
 
+def getAllTriplets(tripletsCDR, tripletsCTD):
+    result = set()
+
+    for key in tripletsCDR:
+        for rel in tripletsCDR[key]:
+            result.add((key[0], rel, key[1]))
+
+    for key in tripletsCTD:
+        for rel in tripletsCTD[key]:
+            result.add((key[0], rel, key[1]))
+    
+    result_list = list(result)
+    result_array = np.array(result_list)
+
+    print(f"Total Triplets: {len(result)}")
+    return result_array
+
 def getFinalTriples(triplets):
     result = set()
 
@@ -70,6 +87,10 @@ if __name__ == '__main__':
         docs = pubtator.load(fp)
 
     tripletsCDR = getTripletsFromCDR(docs, tripletsCTD)
+
+    finalTripletsAll = getAllTriplets(tripletsCDR, tripletsCTD)
+    np.savetxt('./Knowledge_Representation/tripletsAll.txt', finalTripletsAll, fmt='%s %s %s')
+    exit
 
     finalTriplesCTD = getFinalTriples(tripletsCTD)
 

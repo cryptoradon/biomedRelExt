@@ -27,7 +27,9 @@ class CustomDataset(Dataset):
             tokens['input_ids'].squeeze(0),
             tokens['attention_mask'].squeeze(0),
             input.chemicalID,
-            input.diseaseID
+            input.diseaseID,
+            input.groundTruthStart,
+            input.groundTruthEnd
         )
 
 def tokenize_inputs_and_save(docs_inputs, tokenizer, batch_size=16, output_file_path='./Preprocessed/CDRTraining/tokenizedInputs.pkl'):
@@ -37,8 +39,8 @@ def tokenize_inputs_and_save(docs_inputs, tokenizer, batch_size=16, output_file_
         data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
         with open(output_file_path, 'ab') as outputFile:
-            for input_ids, attention_masks, chemicalIDs, diseaseIDs in data_loader:
-                pickle.dump((input_ids, attention_masks, chemicalIDs, diseaseIDs), outputFile)
+            for input_ids, attention_masks, chemicalIDs, diseaseIDs, groundTruthStarts, groundTruthEnds in data_loader:
+                pickle.dump((input_ids, attention_masks, chemicalIDs, diseaseIDs, groundTruthStarts, groundTruthEnds), outputFile)
         print("Input #" + str(i) + " done.")
         i += 1
 

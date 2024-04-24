@@ -9,6 +9,8 @@ class Input:
         self.query = self.createQuery(pair)     # Query that asks which disease is induced
         self.chemicalID = pair.chemical.id
         self.diseaseID = pair.disease.id
+        self.groundTruthStart = pair.groundTruthStart
+        self.groundTruthEnd = pair.groundTruthEnd
 
     def createQuery(self, pair):
         return f"what disease does {pair.chemical.text} induce"

@@ -15,16 +15,18 @@ class Sentence:
 
 # A class for chemical-disease pairs with context and metadata
 class Pair:
-    def __init__(self, chemical, disease, context, pmid, pair_type):
+    def __init__(self, chemical, disease, context, pmid, pairType, groundTruthStart, groundTruthEnd):
         self.chemical = chemical                                # Chemical
         self.disease = disease                                  # Disease
         self.context = context                                  # Context in which the pair occurs, with masking applied
         self.pmid = pmid                                        # PubMed ID of the article
-        self.pair_type = pair_type                              # Specifies whether the pair is intra-sentential or inter-sentential
+        self.pairType = pairType                                # Specifies whether the pair is intra-sentential or inter-sentential
+        self.groundTruthStart = groundTruthStart                # Starting position of the disease that we want to predict, it serves as the label of the datapoint
+        self.groundTruthEnd = groundTruthEnd                    # Ending position of the disease that we want to predict, it serves as the label of the datapoint
 
     # Representation of a Pair object when printed
     def __repr__(self):
-        return f"Pair(chemical={self.chemical.text}, disease={self.disease.text}, context=[{self.context[:30]}...], pmid={self.pmid}, pair_type={self.pair_type})"
+        return f"Pair(chemical={self.chemical.text}, disease={self.disease.text}, context=[{self.context[:30]}...], pmid={self.pmid}, pair_type={self.pairType})"
 
 # Function to mask all diseases in the context except for the target disease
 def maskOtherDiseasesInContext(context, targetDiseaseAnnotation, allAnnotations):
@@ -53,12 +55,17 @@ def instanceConstruction(docs):
 
     for doc in docs:
         pairsInDoc = []                     # Pairs in specific doc
+        relationsInDoc = []                 # Relations in specific doc
         annotations = doc.annotations       # Extract annotations from the document
         text = doc.text                     # Document text
         pmid = doc.pmid                     # PubMed ID of the document
 
         sentences = []                      # List to store Sentence objects
         sentenceTexts = nlp(text)           # Use SpaCy to tokenize the document into sentences
+
+        # Fill the relations list
+        for relation in doc.relations:
+            relationsInDoc.append((relation.id1, relation.id2))
 
         start = 0
         # Fill the sentences list
@@ -82,7 +89,11 @@ def instanceConstruction(docs):
             diseases = [ann for ann in sen.annotations if ann.type == 'Disease']
             for chem in chemicals:
                 for dis in diseases:
-                    pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "intra"))
+                    # Check if the chemical-disease pair is in known relationships
+                    if (chem.id, dis.id) in relationsInDoc:
+                        pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "intra", dis.start, dis.end))
+                    else:
+                        pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "intra", 0, 0))
 
         # Initialize the start and end indices for a window of sentences
         start = 0
@@ -101,7 +112,11 @@ def instanceConstruction(docs):
                 # For each chemical-disease pair found, create a Pair object and add to the pairs list.
                 for chem in currentChemicals:
                     for dis in nextDiseases:
-                        pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "inter"))
+                        # Check if the chemical-disease pair is in known relationships
+                        if (chem.id, dis.id) in relationsInDoc:
+                            pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "intra", dis.start, dis.end))
+                        else:
+                            pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "intra", 0, 0))
 
                 # Repeat the process for diseases in the current sentence and chemicals in the next.
                 currentDiseases = [ann for ann in annsIn3Sentences[0] if ann.type == 'Disease']
@@ -109,7 +124,10 @@ def instanceConstruction(docs):
                 
                 for dis in currentDiseases:
                     for chem in nextChemicals:
-                        pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "inter"))
+                        if (chem.id, dis.id) in relationsInDoc:
+                            pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "intra", dis.start, dis.end))
+                        else:
+                            pairsInDoc.append(Pair(chem, dis, maskOtherDiseasesInContext(text, dis, annotations), pmid, "intra", 0, 0))
 
             # Slide the window one sentence forward.
             start += 1
