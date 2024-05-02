@@ -1,6 +1,7 @@
 from bioc import pubtator
 import spacy
 import pickle
+import copy
 
 # A class to represent sentences within the document
 class Sentence:
@@ -81,7 +82,16 @@ def instanceConstruction(docs):
         for ann in annotations:
             for sen in sentences:
                 if ann.start >= sen.start and ann.end <= sen.end:
-                    sen.addAnnotation(ann)
+                    if ann.id == '-1':
+                        continue
+                    for splitAnn in ann.id.split('|'):
+                        if len(ann.id.split('|')) > 1:
+                            tempAnn = copy.deepcopy(ann)
+                            tempAnn.id = splitAnn
+                            sen.addAnnotation(tempAnn)
+                        else:
+                            sen.addAnnotation(ann)
+
 
         # Generate intra-sentential pairs
         for sen in sentences:

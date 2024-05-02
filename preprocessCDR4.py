@@ -1,5 +1,5 @@
 import pickle
-from transformers import BertTokenizer
+from transformers import BertTokenizerFast
 from preprocessCDR3 import Input
 from torch.utils.data import DataLoader, Dataset
 import torch
@@ -21,20 +21,31 @@ class CustomDataset(Dataset):
             max_length=512,
             truncation=True,
             padding='max_length',
+            return_offsets_mapping=True,  # Include offset mappings
             return_tensors='pt'
         )
+        start_token_index = self.find_token_index(input.groundTruthStart, tokens['offset_mapping'].squeeze(0))
+        end_token_index = self.find_token_index(input.groundTruthEnd, tokens['offset_mapping'].squeeze(0))
         return (
             tokens['input_ids'].squeeze(0),
             tokens['attention_mask'].squeeze(0),
             input.chemicalID,
             input.diseaseID,
-            input.groundTruthStart,
-            input.groundTruthEnd
+            torch.tensor(start_token_index),
+            torch.tensor(end_token_index),
         )
+    def find_token_index(self, char_position, offset_mapping):
+        for i, (start, end) in enumerate(offset_mapping):
+            if start <= char_position <= end:
+                return i
+        print("Char_position: ", char_position)
+        for i, (start, end) in enumerate(offset_mapping):
+            print(start, end)
+        return -1
 
 def tokenize_inputs_and_save(docs_inputs, tokenizer, batch_size=16, output_file_path='./Preprocessed/CDRTraining/tokenizedInputs.pkl'):
     i = 0
-    for inputs in docs_inputs:
+    for inputs in docs_inputs:    
         dataset = CustomDataset(inputs, tokenizer)
         data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
@@ -44,13 +55,14 @@ def tokenize_inputs_and_save(docs_inputs, tokenizer, batch_size=16, output_file_
         print("Input #" + str(i) + " done.")
         i += 1
 
+
 if __name__ == '__main__':
     # Load the inputs that were produced by the third stage
     with open('./Preprocessed/CDRTraining/input.pkl', 'rb') as inputFile:
         docs_inputs = pickle.load(inputFile)
     
     # Initialize tokenizer
-    tokenizer = BertTokenizer.from_pretrained('dmis-lab/biobert-base-cased-v1.2')
+    tokenizer = BertTokenizerFast.from_pretrained('dmis-lab/biobert-base-cased-v1.2')
     
     # Clear the output file first to avoid appending to an old file
     with open('./Preprocessed/CDRTraining/tokenizedInputs.pkl', 'wb') as outputFile:

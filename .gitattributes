@@ -2,3 +2,4 @@ CDR_Data/*.xml filter=lfs diff=lfs merge=lfs -text
 MeSH/desc2024.xml filter=lfs diff=lfs merge=lfs -text
 *.pkl filter=lfs diff=lfs merge=lfs -text
 CDR_Data/CDR.Corpus.v010516/CDR_Training+TestSet.PubTator.txt filter=lfs diff=lfs merge=lfs -text
+Knowledge_Representation/trained_transE_model.pt filter=lfs diff=lfs merge=lfs -text

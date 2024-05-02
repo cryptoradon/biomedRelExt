@@ -7,3 +7,5 @@ testspacyscibert.txt
 biomedRelExtEnv/
 Preprocessed/CDRTraining/tokenizedInputs.pkl
 CTD_Data/CTD_chemicals_diseases.xml
+KCN/
+venv3.10/
