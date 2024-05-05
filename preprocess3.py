@@ -1,5 +1,5 @@
 import pickle
-from preprocessCDR1 import Pair
+from preprocess1 import Pair
 from bioc.pubtator.datastructure import PubTatorAnn
 
 # A class to represent the input to the model

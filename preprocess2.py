@@ -1,6 +1,6 @@
 import pickle
 import xml.etree.ElementTree as ET
-from preprocessCDR1 import Pair
+from preprocess1 import Pair
 from bioc.pubtator.datastructure import PubTatorAnn
 
 # Function to remove the instances containing annotations that have more specific annotations in the document

@@ -1,6 +1,6 @@
 import pickle
 from transformers import BertTokenizerFast
-from preprocessCDR3 import Input
+from preprocess3 import Input
 from torch.utils.data import DataLoader, Dataset
 import torch
 
