@@ -2,6 +2,7 @@ from bioc import pubtator
 import spacy
 import pickle
 import copy
+import os
 
 # A class to represent sentences within the document
 class Sentence:
@@ -158,6 +159,13 @@ if __name__ == '__main__':
     # Create pairs from the loaded documents
     pairs = instanceConstruction(docs)
 
+    # The directory that the code will store its outputs in
+    output_dir = './Preprocessed/CDRTest'
+    
+    # Ensure that the directory exists
+    os.makedirs(output_dir, exist_ok=True)
+
     # Open a file to write the output
-    with open('./Preprocessed/CDRTest/pairs1.pkl', 'wb') as outputFile:
+    output_path = os.path.join(output_dir, 'pairs1.pkl')
+    with open(output_path, 'wb') as outputFile:
         pickle.dump(pairs, outputFile)
