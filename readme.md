@@ -44,7 +44,11 @@ python preprocess3.py
 python preprocess4.py
 ```
 
-The output will be ``` tokenizedInput.pkl ``` in ``` Preprocessed/(CDRTest|CDRTraining|CHRTest|CHRTraining)/ ``` based on the input file and destination mentioned in the codes. Please note that you need to run the pipeline in order to get the preprocessed data as it is not readily availible in the repository. ``` preprocess1.py ``` will automatically create the directory. Alternatively, you can check the Google Drive folder used by colab for the final form of the preprocessed data.
+The output will be ``` tokenizedInput.pkl ``` in ``` Preprocessed/(CDRTest|CDRTraining|CHRTest|CHRTraining)/ ``` based on the input file and destination mentioned in the codes. 
+
+Please note that you need to run the pipeline in order to get the preprocessed data as it is not readily availible in the repository. ``` preprocess1.py ``` will automatically create the directory. Alternatively, you can check the Google Drive folder used by colab for the final form of the preprocessed data. 
+
+Also note that preprocess4 takes a very long time to run on CHR data on a CPU, so the colab notebook has an implementation of this method and if you upload the ``` input.pkl ``` file to the corresponding folder, the notebook can determine the ``` tokenizedInput.pkl ``` in a very short amount of time.
 
 ## Running the Knowledge Representation Extraction
 
