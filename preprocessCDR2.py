@@ -12,7 +12,6 @@ def hypernymFiltering(pairs, descriptorMap):
         newPairsInDoc = []                  # List to store new pairs in specific doc
         
         for i, currentPair in enumerate(pairsInDoc):
-
             currentChemicalID = currentPair.chemical.id
             currentDiseaseID = currentPair.disease.id
             # Remove the pair if the chemical or disease is previously eliminated
@@ -79,7 +78,7 @@ def loadDescriptorMap(meshFile):
 
 if __name__ == '__main__':
     # Load the pairs that were produced by the first stage
-    with open('./Preprocessed/CDRTraining/pairs1.pkl', 'rb') as input_file:
+    with open('./Preprocessed/CDRTest/pairs1.pkl', 'rb') as input_file:
         pairs = pickle.load(input_file)
     
     # Load the annotation hierarchy map from the MeSH dataset
@@ -89,5 +88,5 @@ if __name__ == '__main__':
     pairs = hypernymFiltering(pairs, descriptorMap)
 
     # Open a file to write the output
-    with open('./Preprocessed/CDRTraining/pairs2.pkl', 'wb') as outputFile:
+    with open('./Preprocessed/CDRTest/pairs2.pkl', 'wb') as outputFile:
         pickle.dump(pairs, outputFile)

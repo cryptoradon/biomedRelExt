@@ -152,12 +152,12 @@ def instanceConstruction(docs):
 
 if __name__ == '__main__':
     # Load the document data from a file
-    with open('./CDR_Data/CDR.Corpus.v010516/CDR_TrainingSet.PubTator.txt', 'r') as fp:
+    with open('./CDR_Data/CDR.Corpus.v010516/CDR_TestSet.PubTator.txt', 'r') as fp:
         docs = pubtator.load(fp)
 
     # Create pairs from the loaded documents
     pairs = instanceConstruction(docs)
 
     # Open a file to write the output
-    with open('./Preprocessed/CDRTraining/pairs1.pkl', 'wb') as outputFile:
+    with open('./Preprocessed/CDRTest/pairs1.pkl', 'wb') as outputFile:
         pickle.dump(pairs, outputFile)

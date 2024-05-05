@@ -5,7 +5,12 @@ testspacy.txt
 testspacylg.txt
 testspacyscibert.txt
 biomedRelExtEnv/
-Preprocessed/CDRTraining/tokenizedInputs.pkl
 CTD_Data/CTD_chemicals_diseases.xml
 KCN/
 venv3.10/
+test.py
+testIC.txt
+Preprocessed/CDRTest/*
+Preprocessed/CDRTraining/*
+Preprocessed/CHRTest/*
+Preprocessed/CHRTraining/*
