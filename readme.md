@@ -35,20 +35,34 @@ pip install -r requirements.txt
 
 ## Running the preprocessing
 
-There are four scripts that are to be run in order for the preprocessing:
+There are four scripts that are to be run in order for the preprocessing for the CDR data:
 
 ```bash
-python preprocess1.py
-python preprocess2.py
-python preprocess3.py
-python preprocess4.py
+python preprocessCDR1.py
+python preprocessCDR2.py
+python preprocessCDR3.py
+python preprocessCDR4.py
 ```
 
-The output will be ``` tokenizedInput.pkl ``` in ``` Preprocessed/(CDRTest|CDRTraining|CHRTest|CHRTraining)/ ``` based on the input file and destination mentioned in the codes. 
+The output will be ``` tokenizedInput.pkl ``` in ``` Preprocessed/(CDRTest|CDRTraining)/ ``` based on the input file and destination mentioned in the codes. 
 
-Please note that you need to run the pipeline in order to get the preprocessed data as it is not readily availible in the repository. ``` preprocess1.py ``` will automatically create the directory. Alternatively, you can check the Google Drive folder used by colab for the final form of the preprocessed data. 
+Please note that you need to run the pipeline in order to get the preprocessed data as it is not readily availible in the repository. ``` preprocessCDR1.py ``` will automatically create the directory. Alternatively, you can check the Google Drive folder used by colab for the final form of the preprocessed data. 
 
-Also note that preprocess4 takes a very long time to run on CHR data on a CPU, so the colab notebook has an implementation of this method and if you upload the ``` input.pkl ``` file to the corresponding folder, the notebook can determine the ``` tokenizedInput.pkl ``` in a very short amount of time.
+Also note that preprocessCDR1 and preprocessCDR4 takes a very long time to run on a CPU, so the colab notebook has an implementation of this method and if you upload the ``` input.pkl ``` file to the corresponding folder, the notebook can determine the ``` tokenizedInput.pkl ``` in a very short amount of time.
+
+There are three scripts that are to be run in order for the preprocessing for the CDR data:
+
+```bash
+python preprocessCHR1.py
+python preprocessCHR2.py
+python preprocessCHR3.py
+```
+
+The output will be ``` tokenizedInput.pkl ``` in ``` Preprocessed/(CHRTest|CHRTraining)/ ``` based on the input file and destination mentioned in the codes. 
+
+Please note that you need to run the pipeline in order to get the preprocessed data as it is not readily availible in the repository. ``` preprocessCHR1.py ``` will automatically create the directory. Alternatively, you can check the Google Drive folder used by colab for the final form of the preprocessed data. 
+
+Also note that preprocessCHR1 and preprocessCHR4 takes a very long time to run on a CPU, so the colab notebook has an implementation of this method and if you upload the ``` input.pkl ``` file to the corresponding folder, the notebook can determine the ``` tokenizedInput.pkl ``` in a very short amount of time.
 
 ## Running the Knowledge Representation Extraction
 
